@@ -14,11 +14,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float deceleration = 15f;
     [SerializeField] private float rotationSpeed = 10f;
     
+    [Header("Animation Settings")]
+    [SerializeField] private float stopThreshold = 0.1f;
+    
     [Header("Physics")]
     [SerializeField] private float drag = 5f;
     
     private Rigidbody _rb;
     private Vector3 _currentVelocity;
+    private float _previousInputMagnitude;
     
     private void Start()
     {
@@ -130,10 +134,17 @@ public class PlayerMovement : MonoBehaviour
             float vertical = joystick.Vertical;
             
             float inputMagnitude = new Vector2(horizontal, vertical).magnitude;
+            inputMagnitude = Mathf.Clamp01(inputMagnitude);
             
-            float targetSpeed = Mathf.Clamp01(inputMagnitude);
+            animator.SetFloat("Speed", inputMagnitude);
             
-            animator.SetFloat("Speed", targetSpeed);
+            bool wasFastMoving = _previousInputMagnitude > stopThreshold;
+            bool isSlowMoving = inputMagnitude < stopThreshold;
+            bool isStopping = wasFastMoving && isSlowMoving;
+            
+            animator.SetBool("IsStopping", isStopping);
+            
+            _previousInputMagnitude = inputMagnitude;
         }
         else
         {

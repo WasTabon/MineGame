@@ -3680,10 +3680,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joystick: {fileID: 988339676}
   animator: {fileID: 95302533162385461}
-  moveSpeed: 5
+  walkSpeed: 2
+  runSpeed: 5
   acceleration: 10
   deceleration: 15
   rotationSpeed: 10
+  stopThreshold: 0.1
   drag: 5
 --- !u!114 &95302533162385463
 MonoBehaviour:
