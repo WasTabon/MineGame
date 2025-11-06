@@ -1,12 +1,15 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Joystick joystick;
+    [SerializeField] private Animator animator;
     
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float walkSpeed = 2f;
+    [SerializeField] private float runSpeed = 5f;
     [SerializeField] private float acceleration = 10f;
     [SerializeField] private float deceleration = 15f;
     [SerializeField] private float rotationSpeed = 10f;
@@ -37,12 +40,22 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.Log("Joystick is null");
         }
+        
+        if (animator == null)
+        {
+            Debug.Log("Animator is null");
+        }
     }
     
     private void FixedUpdate()
     {
         HandleMovement();
         HandleRotation();
+    }
+    
+    private void Update()
+    {
+        UpdateAnimation();
     }
     
     private void HandleMovement()
@@ -53,8 +66,12 @@ public class PlayerMovement : MonoBehaviour
             float vertical = joystick.Vertical;
             
             Vector3 moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
+            float inputMagnitude = new Vector2(horizontal, vertical).magnitude;
+            inputMagnitude = Mathf.Clamp01(inputMagnitude);
             
-            Vector3 targetVelocity = moveDirection * moveSpeed;
+            float currentMaxSpeed = Mathf.Lerp(walkSpeed, runSpeed, inputMagnitude);
+            
+            Vector3 targetVelocity = moveDirection * currentMaxSpeed;
             
             float currentAcceleration = moveDirection.magnitude > 0.1f ? acceleration : deceleration;
             
@@ -101,6 +118,32 @@ public class PlayerMovement : MonoBehaviour
             if (_rb == null)
             {
                 Debug.Log("Rigidbody is null in HandleRotation");
+            }
+        }
+    }
+    
+    private void UpdateAnimation()
+    {
+        if (animator != null && joystick != null)
+        {
+            float horizontal = joystick.Horizontal;
+            float vertical = joystick.Vertical;
+            
+            float inputMagnitude = new Vector2(horizontal, vertical).magnitude;
+            
+            float targetSpeed = Mathf.Clamp01(inputMagnitude);
+            
+            animator.SetFloat("Speed", targetSpeed);
+        }
+        else
+        {
+            if (animator == null)
+            {
+                Debug.Log("Animator is null in UpdateAnimation");
+            }
+            if (joystick == null)
+            {
+                Debug.Log("Joystick is null in UpdateAnimation");
             }
         }
     }
