@@ -2029,7 +2029,7 @@ GameObject:
   - component: {fileID: 396351625}
   - component: {fileID: 95302533162385462}
   m_Layer: 0
-  m_Name: SM_Chr_ScifiWorlds_Strider_Male_01
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3690,10 +3690,10 @@ Animator:
   m_GameObject: {fileID: 1574489909297709}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: e274402e4c839934c817fc0664347c81, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5ec9b81e824f3b84facbc34af0e42b29, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
