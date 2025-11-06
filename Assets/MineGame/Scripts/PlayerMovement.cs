@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _stopInertiaDirection;
     private bool _canMove;
     private bool _wasJoystickActive;
+    private Quaternion _lockedRotation;
     
     private void Start()
     {
@@ -39,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _rb.interpolation = RigidbodyInterpolation.Interpolate;
             _rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-            _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+            _rb.constraints = RigidbodyConstraints.FreezeRotation;
             _rb.drag = drag;
         }
         else
@@ -59,6 +60,7 @@ public class PlayerMovement : MonoBehaviour
         
         _canMove = true;
         _wasJoystickActive = false;
+        _lockedRotation = transform.rotation;
     }
     
     private void FixedUpdate()
@@ -85,6 +87,8 @@ public class PlayerMovement : MonoBehaviour
                 Debug.LogError("Rigidbody is null when stopping movement");
             }
         }
+        
+        LockRotation();
     }
     
     private void Update()
@@ -195,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
     
     private void HandleRotation()
     {
-        if (joystick != null && _rb != null)
+        if (joystick != null)
         {
             float horizontal = joystick.Horizontal;
             float vertical = joystick.Vertical;
@@ -206,19 +210,24 @@ public class PlayerMovement : MonoBehaviour
                 
                 Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
                 
-                _rb.rotation = Quaternion.Slerp(_rb.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+                _lockedRotation = Quaternion.Slerp(_lockedRotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
             }
         }
         else
         {
-            if (joystick == null)
-            {
-                Debug.LogError("Joystick is null in HandleRotation");
-            }
-            else
-            {
-                Debug.LogError("Rigidbody is null in HandleRotation");
-            }
+            Debug.LogError("Joystick is null in HandleRotation");
+        }
+    }
+    
+    private void LockRotation()
+    {
+        if (_rb != null)
+        {
+            _rb.rotation = _lockedRotation;
+        }
+        else
+        {
+            Debug.LogError("Rigidbody is null in LockRotation");
         }
     }
     

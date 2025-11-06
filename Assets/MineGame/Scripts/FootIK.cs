@@ -21,6 +21,7 @@ public class FootIK : MonoBehaviour
     private float _leftFootHeight;
     private float _rightFootHeight;
     private float _bodyOffset;
+    private bool _isIdle;
     
     private void Start()
     {
@@ -28,7 +29,25 @@ public class FootIK : MonoBehaviour
         
         if (_animator == null)
         {
-            Debug.Log("Animator is null");
+            Debug.LogError("Animator is null");
+        }
+    }
+    
+    private void Update()
+    {
+        CheckIfIdle();
+    }
+    
+    private void CheckIfIdle()
+    {
+        if (_animator != null)
+        {
+            AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+            _isIdle = stateInfo.IsName("Idle");
+        }
+        else
+        {
+            Debug.LogError("Animator is null in CheckIfIdle");
         }
     }
     
@@ -36,37 +55,47 @@ public class FootIK : MonoBehaviour
     {
         if (_animator != null)
         {
-            _leftFootHeight = 0f;
-            _rightFootHeight = 0f;
-            
-            if (enableLeftFootIK)
+            if (_isIdle)
             {
-                _leftFootHeight = SetFootIK(AvatarIKGoal.LeftFoot, HumanBodyBones.LeftFoot);
+                _leftFootHeight = 0f;
+                _rightFootHeight = 0f;
+                
+                if (enableLeftFootIK)
+                {
+                    _leftFootHeight = SetFootIK(AvatarIKGoal.LeftFoot, HumanBodyBones.LeftFoot);
+                }
+                else
+                {
+                    _animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 0f);
+                    _animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 0f);
+                }
+                
+                if (enableRightFootIK)
+                {
+                    _rightFootHeight = SetFootIK(AvatarIKGoal.RightFoot, HumanBodyBones.RightFoot);
+                }
+                else
+                {
+                    _animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0f);
+                    _animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 0f);
+                }
+                
+                if (adjustBodyHeight)
+                {
+                    AdjustBodyHeight();
+                }
             }
             else
             {
                 _animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 0f);
                 _animator.SetIKRotationWeight(AvatarIKGoal.LeftFoot, 0f);
-            }
-            
-            if (enableRightFootIK)
-            {
-                _rightFootHeight = SetFootIK(AvatarIKGoal.RightFoot, HumanBodyBones.RightFoot);
-            }
-            else
-            {
                 _animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0f);
                 _animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 0f);
-            }
-            
-            if (adjustBodyHeight)
-            {
-                AdjustBodyHeight();
             }
         }
         else
         {
-            Debug.Log("Animator is null in OnAnimatorIK");
+            Debug.LogError("Animator is null in OnAnimatorIK");
         }
     }
     
@@ -103,7 +132,7 @@ public class FootIK : MonoBehaviour
         }
         else
         {
-            Debug.Log($"Foot transform is null for {footBone}");
+            Debug.LogError($"Foot transform is null for {footBone}");
         }
         
         return heightOffset;
@@ -172,7 +201,7 @@ public class FootIK : MonoBehaviour
         }
         else
         {
-            Debug.Log($"Foot transform is null for {footBone} in DrawFootGizmo");
+            Debug.LogError($"Foot transform is null for {footBone} in DrawFootGizmo");
         }
     }
 }
