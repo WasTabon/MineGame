@@ -10,10 +10,17 @@ public class FootIK : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float ikWeight = 1f;
     
+    [Header("Body Adjustment")]
+    [SerializeField] private bool adjustBodyHeight = true;
+    [SerializeField] private float bodyOffsetSmooth = 5f;
+    
     [Header("Debug")]
     [SerializeField] private bool showGizmos = true;
     
     private Animator _animator;
+    private float _leftFootHeight;
+    private float _rightFootHeight;
+    private float _bodyOffset;
     
     private void Start()
     {
@@ -29,9 +36,12 @@ public class FootIK : MonoBehaviour
     {
         if (_animator != null)
         {
+            _leftFootHeight = 0f;
+            _rightFootHeight = 0f;
+            
             if (enableLeftFootIK)
             {
-                SetFootIK(AvatarIKGoal.LeftFoot, HumanBodyBones.LeftFoot);
+                _leftFootHeight = SetFootIK(AvatarIKGoal.LeftFoot, HumanBodyBones.LeftFoot);
             }
             else
             {
@@ -41,12 +51,17 @@ public class FootIK : MonoBehaviour
             
             if (enableRightFootIK)
             {
-                SetFootIK(AvatarIKGoal.RightFoot, HumanBodyBones.RightFoot);
+                _rightFootHeight = SetFootIK(AvatarIKGoal.RightFoot, HumanBodyBones.RightFoot);
             }
             else
             {
                 _animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 0f);
                 _animator.SetIKRotationWeight(AvatarIKGoal.RightFoot, 0f);
+            }
+            
+            if (adjustBodyHeight)
+            {
+                AdjustBodyHeight();
             }
         }
         else
@@ -55,9 +70,10 @@ public class FootIK : MonoBehaviour
         }
     }
     
-    private void SetFootIK(AvatarIKGoal foot, HumanBodyBones footBone)
+    private float SetFootIK(AvatarIKGoal foot, HumanBodyBones footBone)
     {
         Transform footTransform = _animator.GetBoneTransform(footBone);
+        float heightOffset = 0f;
         
         if (footTransform != null)
         {
@@ -71,6 +87,8 @@ public class FootIK : MonoBehaviour
                 
                 Vector3 targetPosition = hit.point;
                 targetPosition.y += footOffset;
+                
+                heightOffset = targetPosition.y - footTransform.position.y;
                 
                 _animator.SetIKPosition(foot, targetPosition);
                 
@@ -86,6 +104,26 @@ public class FootIK : MonoBehaviour
         else
         {
             Debug.Log($"Foot transform is null for {footBone}");
+        }
+        
+        return heightOffset;
+    }
+    
+    private void AdjustBodyHeight()
+    {
+        float targetOffset = Mathf.Min(_leftFootHeight, _rightFootHeight);
+        
+        if (targetOffset < 0f)
+        {
+            _bodyOffset = Mathf.Lerp(_bodyOffset, targetOffset, bodyOffsetSmooth * Time.deltaTime);
+            
+            Vector3 bodyPosition = _animator.bodyPosition;
+            bodyPosition.y += _bodyOffset;
+            _animator.bodyPosition = bodyPosition;
+        }
+        else
+        {
+            _bodyOffset = Mathf.Lerp(_bodyOffset, 0f, bodyOffsetSmooth * Time.deltaTime);
         }
     }
     
