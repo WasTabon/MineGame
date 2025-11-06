@@ -14,15 +14,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float deceleration = 15f;
     [SerializeField] private float rotationSpeed = 10f;
     
-    [Header("Animation Settings")]
-    [SerializeField] private float stopThreshold = 0.1f;
+    [Header("Stop Settings")]
+    [SerializeField] private float stopSpeedThreshold = 0.3f;
+    [SerializeField] private float stopInertiaDuration = 0.07f;
+    [SerializeField] private float stopInertiaDistance = 0.5f;
     
     [Header("Physics")]
     [SerializeField] private float drag = 5f;
     
     private Rigidbody _rb;
     private Vector3 _currentVelocity;
-    private float _previousInputMagnitude;
+    private bool _isMoving;
+    private bool _isStopping;
+    private float _stopTimer;
+    private Vector3 _stopInertiaDirection;
+    private bool _canMove;
     
     private void Start()
     {
@@ -37,29 +43,65 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            Debug.Log("Rigidbody is null");
+            Debug.LogError("Rigidbody is null");
         }
         
         if (joystick == null)
         {
-            Debug.Log("Joystick is null");
+            Debug.LogError("Joystick is null");
         }
         
         if (animator == null)
         {
-            Debug.Log("Animator is null");
+            Debug.LogError("Animator is null");
         }
+        
+        _canMove = true;
     }
     
     private void FixedUpdate()
     {
-        HandleMovement();
-        HandleRotation();
+        CheckCurrentAnimationState();
+        
+        if (_isStopping)
+        {
+            HandleStopInertia();
+        }
+        else if (_canMove)
+        {
+            HandleMovement();
+            HandleRotation();
+        }
+        else
+        {
+            if (_rb != null)
+            {
+                _rb.velocity = new Vector3(0f, _rb.velocity.y, 0f);
+            }
+            else
+            {
+                Debug.LogError("Rigidbody is null when stopping movement");
+            }
+        }
     }
     
     private void Update()
     {
         UpdateAnimation();
+    }
+    
+    private void CheckCurrentAnimationState()
+    {
+        if (animator != null)
+        {
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+            
+            _canMove = stateInfo.IsName("Blend Tree");
+        }
+        else
+        {
+            Debug.LogError("Animator is null in CheckCurrentAnimationState");
+        }
     }
     
     private void HandleMovement()
@@ -88,12 +130,51 @@ public class PlayerMovement : MonoBehaviour
         {
             if (joystick == null)
             {
-                Debug.Log("Joystick is null in HandleMovement");
+                Debug.LogError("Joystick is null in HandleMovement");
             }
-            if (_rb == null)
+            else
             {
-                Debug.Log("Rigidbody is null in HandleMovement");
+                Debug.LogError("Rigidbody is null in HandleMovement");
             }
+        }
+    }
+    
+    private void HandleStopInertia()
+    {
+        if (_rb != null)
+        {
+            _stopTimer += Time.fixedDeltaTime;
+            
+            float progress = _stopTimer / stopInertiaDuration;
+            
+            if (progress < 1f)
+            {
+                float speedMultiplier = 1f - progress;
+                float inertiaSpeed = (stopInertiaDistance / stopInertiaDuration) * speedMultiplier;
+                
+                Vector3 inertiaVelocity = _stopInertiaDirection * inertiaSpeed;
+                Vector3 newVelocity = new Vector3(inertiaVelocity.x, _rb.velocity.y, inertiaVelocity.z);
+                _rb.velocity = newVelocity;
+            }
+            else
+            {
+                _rb.velocity = new Vector3(0f, _rb.velocity.y, 0f);
+                _currentVelocity = Vector3.zero;
+                _isStopping = false;
+                
+                if (animator != null)
+                {
+                    animator.SetBool("IsStopping", false);
+                }
+                else
+                {
+                    Debug.LogError("Animator is null when finishing stop");
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("Rigidbody is null in HandleStopInertia");
         }
     }
     
@@ -117,11 +198,11 @@ public class PlayerMovement : MonoBehaviour
         {
             if (joystick == null)
             {
-                Debug.Log("Joystick is null in HandleRotation");
+                Debug.LogError("Joystick is null in HandleRotation");
             }
-            if (_rb == null)
+            else
             {
-                Debug.Log("Rigidbody is null in HandleRotation");
+                Debug.LogError("Rigidbody is null in HandleRotation");
             }
         }
     }
@@ -136,25 +217,57 @@ public class PlayerMovement : MonoBehaviour
             float inputMagnitude = new Vector2(horizontal, vertical).magnitude;
             inputMagnitude = Mathf.Clamp01(inputMagnitude);
             
-            animator.SetFloat("Speed", inputMagnitude);
+            bool wasMoving = _isMoving;
+            _isMoving = inputMagnitude > 0.1f;
             
-            bool wasFastMoving = _previousInputMagnitude > stopThreshold;
-            bool isSlowMoving = inputMagnitude < stopThreshold;
-            bool isStopping = wasFastMoving && isSlowMoving;
-            
-            animator.SetBool("IsStopping", isStopping);
-            
-            _previousInputMagnitude = inputMagnitude;
+            if (_isStopping)
+            {
+                animator.SetFloat("Speed", 0f);
+                
+                if (_isMoving && _canMove)
+                {
+                    _isStopping = false;
+                    _stopTimer = 0f;
+                    animator.SetBool("IsStopping", false);
+                }
+            }
+            else
+            {
+                animator.SetFloat("Speed", inputMagnitude);
+                
+                if (wasMoving && !_isMoving)
+                {
+                    float currentSpeed = _currentVelocity.magnitude;
+                    
+                    if (currentSpeed > stopSpeedThreshold)
+                    {
+                        _isStopping = true;
+                        _stopTimer = 0f;
+                        
+                        if (_currentVelocity.magnitude > 0.1f)
+                        {
+                            _stopInertiaDirection = _currentVelocity.normalized;
+                        }
+                        else
+                        {
+                            _stopInertiaDirection = transform.forward;
+                        }
+                        
+                        animator.SetBool("IsStopping", true);
+                        animator.SetFloat("Speed", 0f);
+                    }
+                }
+            }
         }
         else
         {
             if (animator == null)
             {
-                Debug.Log("Animator is null in UpdateAnimation");
+                Debug.LogError("Animator is null in UpdateAnimation");
             }
-            if (joystick == null)
+            else
             {
-                Debug.Log("Joystick is null in UpdateAnimation");
+                Debug.LogError("Joystick is null in UpdateAnimation");
             }
         }
     }
