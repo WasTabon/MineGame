@@ -29,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
     private float _stopTimer;
     private Vector3 _stopInertiaDirection;
     private bool _canMove;
+    private bool _wasJoystickActive;
     
     private void Start()
     {
@@ -57,6 +58,7 @@ public class PlayerMovement : MonoBehaviour
         }
         
         _canMove = true;
+        _wasJoystickActive = false;
     }
     
     private void FixedUpdate()
@@ -101,6 +103,19 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             Debug.LogError("Animator is null in CheckCurrentAnimationState");
+        }
+    }
+    
+    private bool IsJoystickActive()
+    {
+        if (joystick != null)
+        {
+            return Input.touchCount > 0 || Input.GetMouseButton(0);
+        }
+        else
+        {
+            Debug.LogError("Joystick is null in IsJoystickActive");
+            return false;
         }
     }
     
@@ -211,6 +226,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (animator != null && joystick != null)
         {
+            bool isJoystickActive = IsJoystickActive();
+            
             float horizontal = joystick.Horizontal;
             float vertical = joystick.Vertical;
             
@@ -235,7 +252,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 animator.SetFloat("Speed", inputMagnitude);
                 
-                if (wasMoving && !_isMoving)
+                if (_wasJoystickActive && !isJoystickActive)
                 {
                     float currentSpeed = _currentVelocity.magnitude;
                     
@@ -258,6 +275,8 @@ public class PlayerMovement : MonoBehaviour
                     }
                 }
             }
+            
+            _wasJoystickActive = isJoystickActive;
         }
         else
         {
