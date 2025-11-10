@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class MoneyUI : MonoBehaviour
 {
@@ -63,6 +64,11 @@ public class MoneyUI : MonoBehaviour
             _displayedMoney = newMoney;
             UpdateMoneyText(newMoney);
         }
+    }
+
+    public void LoadLevels()
+    {
+        SceneManager.LoadScene("Levels");
     }
     
     private void AnimateMoneyIncrease(int fromMoney, int toMoney)
