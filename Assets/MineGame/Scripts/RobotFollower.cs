@@ -10,6 +10,7 @@ public class RobotFollower : MonoBehaviour
     [SerializeField] private float followDistance = 3f;
     [SerializeField] private float stopDistance = 2f;
     [SerializeField] private float moveSpeed = 3f;
+    [SerializeField] private float miningSpeed = 6f; // Швидкість руху до кристала (в 2 рази більше)
     [SerializeField] private float acceleration = 5f;
     [SerializeField] private float deceleration = 8f;
     
@@ -32,15 +33,15 @@ public class RobotFollower : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         
-        if (_rb != null)
+        if (_rb == null)
+        {
+            Debug.LogError("Rigidbody is null on robot");
+        }
+        else
         {
             _rb.interpolation = RigidbodyInterpolation.Interpolate;
             _rb.drag = drag;
             _rb.constraints = RigidbodyConstraints.FreezeRotation;
-        }
-        else
-        {
-            Debug.LogError("Rigidbody is null on robot");
         }
         
         if (player == null)
@@ -53,30 +54,28 @@ public class RobotFollower : MonoBehaviour
     
     private void FixedUpdate()
     {
-        if (player != null && _rb != null)
+        if (player == null)
         {
-            if (_isMining && _miningTarget != null)
-            {
-                FollowMiningTarget();
-            }
-            else
-            {
-                FollowPlayer();
-            }
-            
-            UpdateRotation();
+            Debug.LogError("Player is null in FixedUpdate");
+            return;
+        }
+        
+        if (_rb == null)
+        {
+            Debug.LogError("Rigidbody is null in FixedUpdate");
+            return;
+        }
+        
+        if (_isMining && _miningTarget != null)
+        {
+            FollowMiningTarget();
         }
         else
         {
-            if (player == null)
-            {
-                Debug.LogError("Player is null in FixedUpdate");
-            }
-            else
-            {
-                Debug.LogError("Rigidbody is null in FixedUpdate");
-            }
+            FollowPlayer();
         }
+        
+        UpdateRotation();
     }
     
     public void SetMiningTarget(Transform target)
@@ -105,12 +104,13 @@ public class RobotFollower : MonoBehaviour
         
         Vector3 targetVelocity = Vector3.zero;
         
-        float targetDistance = 1.5f;
+        // Дистанція зупинки - 3 метри від кристала
+        float targetDistance = 3f;
         
-        if (distanceToTarget > targetDistance + 0.5f)
+        if (distanceToTarget > targetDistance + 0.2f)
         {
             Vector3 moveDirection = directionToTarget.normalized;
-            targetVelocity = moveDirection * moveSpeed;
+            targetVelocity = moveDirection * miningSpeed; // Використовуємо підвищену швидкість
         }
         else
         {
@@ -136,7 +136,7 @@ public class RobotFollower : MonoBehaviour
         if (distanceToPlayer > followDistance)
         {
             Vector3 moveDirection = directionToPlayer.normalized;
-            targetVelocity = moveDirection * moveSpeed;
+            targetVelocity = moveDirection * moveSpeed; // Звичайна швидкість
         }
         else if (distanceToPlayer < stopDistance)
         {
@@ -167,20 +167,23 @@ public class RobotFollower : MonoBehaviour
     
     private void OnDrawGizmos()
     {
-        if (!showGizmos || player == null)
+        if (!showGizmos)
         {
             return;
         }
-        else
+        
+        if (player == null)
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, followDistance);
-            
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(transform.position, stopDistance);
-            
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, player.position);
+            return;
         }
+        
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, followDistance);
+        
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, stopDistance);
+        
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, player.position);
     }
 }

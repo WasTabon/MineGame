@@ -121,68 +121,54 @@ public class CrystalMiningSystem : MonoBehaviour
     
     private IEnumerator WaitForRobotToReachCrystal()
     {
-        if (robot == null || _currentCrystal == null)
+        if (robot == null)
         {
-            if (robot == null)
-            {
-                Debug.LogError("Robot is null in WaitForRobotToReachCrystal start");
-            }
-            else
-            {
-                Debug.LogError("Current crystal is null in WaitForRobotToReachCrystal start");
-            }
+            Debug.LogError("Robot is null in WaitForRobotToReachCrystal start");
             yield break;
         }
-        
-        float triggerRadius = 0f;
-        if (_currentCrystalTrigger is SphereCollider sphereCollider)
+    
+        if (_currentCrystal == null)
         {
-            triggerRadius = sphereCollider.radius * _currentCrystal.localScale.x;
+            Debug.LogError("Current crystal is null in WaitForRobotToReachCrystal start");
+            yield break;
         }
-        else if (_currentCrystalTrigger is BoxCollider boxCollider)
-        {
-            triggerRadius = Mathf.Max(boxCollider.size.x, boxCollider.size.z) * 0.5f * _currentCrystal.localScale.x;
-        }
-        else
-        {
-            triggerRadius = 2f;
-        }
-        
-        float targetDistance = triggerRadius - robotStopDistance;
-        
+    
+        // Збільшена дистанція зупинки - робот буде стояти далі від кристала
+        float finalStopDistance = 3f;
+    
         while (_isMining && _currentCrystal != null && robot != null)
         {
             float distance = Vector3.Distance(robot.transform.position, _currentCrystal.position);
-            
-            if (distance <= targetDistance)
+        
+            if (distance <= finalStopDistance)
             {
                 break;
             }
-            
+        
             yield return null;
         }
-        
+    
         if (!_isMining)
         {
             yield break;
         }
-        
+    
         if (_currentCrystal == null)
         {
             Debug.LogError("Current crystal is null after waiting");
             yield break;
         }
-        
+    
         if (robot == null)
         {
             Debug.LogError("Robot is null after waiting");
             yield break;
         }
-        
+    
         Vector3 crystalPosition = _currentCrystal.position;
         Vector3 lookDirection = (crystalPosition - robot.transform.position).normalized;
         lookDirection.y = 0f;
-        
+    
         if (lookDirection != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
