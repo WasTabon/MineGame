@@ -7432,7 +7432,7 @@ GameObject:
   - component: {fileID: 33591712722518997}
   - component: {fileID: 23632044896956473}
   - component: {fileID: 33591712722518998}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SM_Veh_Apc_02_Wheel_rm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7664,7 +7664,7 @@ GameObject:
   - component: {fileID: 33034422327585199}
   - component: {fileID: 23926387420533775}
   - component: {fileID: 33034422327585200}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SM_Veh_Apc_02_Wheel_lr
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7765,7 +7765,7 @@ GameObject:
   - component: {fileID: 33432156976149525}
   - component: {fileID: 23594910849761515}
   - component: {fileID: 33432156976149526}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SM_Veh_Apc_02_Wheel_rf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7901,7 +7901,7 @@ GameObject:
   - component: {fileID: 33193370418640189}
   - component: {fileID: 23439020440359493}
   - component: {fileID: 33193370418640190}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SM_Veh_Apc_02_Wheel_lm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8178,6 +8178,7 @@ GameObject:
   - component: {fileID: 95302533162385461}
   - component: {fileID: 95302533162385464}
   - component: {fileID: 95302533162385465}
+  - component: {fileID: 95302533162385467}
   - component: {fileID: 95302533162385462}
   - component: {fileID: 95302533162385466}
   m_Layer: 0
@@ -8199,7 +8200,7 @@ GameObject:
   - component: {fileID: 33608392680201249}
   - component: {fileID: 23746132915614665}
   - component: {fileID: 33608392680201250}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SM_Veh_Apc_02_Wheel_rr
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8268,7 +8269,7 @@ GameObject:
   - component: {fileID: 33239146198615025}
   - component: {fileID: 33239146198615023}
   - component: {fileID: 33239146198615024}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Robot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8702,7 +8703,7 @@ GameObject:
   - component: {fileID: 33165044583485527}
   - component: {fileID: 23964303389605781}
   - component: {fileID: 33165044583485528}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SM_Veh_Apc_02_Wheel_lf
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10988,7 +10989,7 @@ CapsuleCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -11017,11 +11018,33 @@ MonoBehaviour:
   miningProgressRadial: {fileID: 598164721}
   miningDuration: 5
   crystalReward: 50
+  robotStopDistance: 1
   uiShowDuration: 0.3
   uiRotationSpeed: 2
   crystalShrinkDuration: 0.5
   crystalFlyDuration: 1
   crystalFlyHeight: 3
+--- !u!65 &95302533162385467
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1574489909297709}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 128
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2, z: 1}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!4 &96770993225449989
 Transform:
   m_ObjectHideFlags: 0

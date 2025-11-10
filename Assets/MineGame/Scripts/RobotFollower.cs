@@ -25,6 +25,8 @@ public class RobotFollower : MonoBehaviour
     private Rigidbody _rb;
     private Vector3 _currentVelocity;
     private Quaternion _targetRotation;
+    private Transform _miningTarget;
+    private bool _isMining;
     
     private void Start()
     {
@@ -53,7 +55,15 @@ public class RobotFollower : MonoBehaviour
     {
         if (player != null && _rb != null)
         {
-            FollowPlayer();
+            if (_isMining && _miningTarget != null)
+            {
+                FollowMiningTarget();
+            }
+            else
+            {
+                FollowPlayer();
+            }
+            
             UpdateRotation();
         }
         else
@@ -67,6 +77,52 @@ public class RobotFollower : MonoBehaviour
                 Debug.LogError("Rigidbody is null in FixedUpdate");
             }
         }
+    }
+    
+    public void SetMiningTarget(Transform target)
+    {
+        _miningTarget = target;
+        _isMining = true;
+    }
+    
+    public void ClearMiningTarget()
+    {
+        _miningTarget = null;
+        _isMining = false;
+    }
+    
+    private void FollowMiningTarget()
+    {
+        if (_miningTarget == null)
+        {
+            Debug.LogError("Mining target is null in FollowMiningTarget");
+            return;
+        }
+        
+        Vector3 directionToTarget = _miningTarget.position - transform.position;
+        directionToTarget.y = 0f;
+        float distanceToTarget = directionToTarget.magnitude;
+        
+        Vector3 targetVelocity = Vector3.zero;
+        
+        float targetDistance = 1.5f;
+        
+        if (distanceToTarget > targetDistance + 0.5f)
+        {
+            Vector3 moveDirection = directionToTarget.normalized;
+            targetVelocity = moveDirection * moveSpeed;
+        }
+        else
+        {
+            targetVelocity = Vector3.zero;
+        }
+        
+        float currentAcceleration = targetVelocity.magnitude > 0.1f ? acceleration : deceleration;
+        
+        _currentVelocity = Vector3.Lerp(_currentVelocity, targetVelocity, currentAcceleration * Time.fixedDeltaTime);
+        
+        Vector3 currentRbVelocity = _rb.velocity;
+        _rb.velocity = new Vector3(_currentVelocity.x, currentRbVelocity.y, _currentVelocity.z);
     }
     
     private void FollowPlayer()
