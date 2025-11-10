@@ -59272,6 +59272,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 4357111295761425}
+  wheels:
+  - {fileID: 4621561378440073}
+  - {fileID: 4322626020894001}
+  - {fileID: 4355360123429433}
+  - {fileID: 4997840584880947}
+  - {fileID: 4324157970016771}
+  - {fileID: 4319970455348813}
   followDistance: 5
   stopDistance: 2
   moveSpeed: 5
@@ -59279,6 +59286,8 @@ MonoBehaviour:
   acceleration: 5
   deceleration: 7
   rotationSpeed: 5
+  wheelRotationSpeed: 360
+  wheelRotationAxis: {x: 1, y: 0, z: 0}
   drag: 2
   showGizmos: 1
 --- !u!64 &33239146198615025

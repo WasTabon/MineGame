@@ -5,17 +5,22 @@ public class RobotFollower : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform player;
+    [SerializeField] private Transform[] wheels;
     
     [Header("Follow Settings")]
     [SerializeField] private float followDistance = 3f;
     [SerializeField] private float stopDistance = 2f;
     [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float miningSpeed = 6f; // Швидкість руху до кристала (в 2 рази більше)
+    [SerializeField] private float miningSpeed = 6f;
     [SerializeField] private float acceleration = 5f;
     [SerializeField] private float deceleration = 8f;
     
     [Header("Rotation Settings")]
     [SerializeField] private float rotationSpeed = 5f;
+    
+    [Header("Wheel Settings")]
+    [SerializeField] private float wheelRotationSpeed = 360f;
+    [SerializeField] private Vector3 wheelRotationAxis = Vector3.right;
     
     [Header("Physics")]
     [SerializeField] private float drag = 2f;
@@ -48,6 +53,11 @@ public class RobotFollower : MonoBehaviour
             Debug.LogError("Player transform is null");
         }
         
+        if (wheels == null || wheels.Length == 0)
+        {
+            Debug.LogError("Wheels array is null or empty");
+        }
+        
         _targetRotation = transform.rotation;
     }
     
@@ -75,6 +85,7 @@ public class RobotFollower : MonoBehaviour
         }
         
         UpdateRotation();
+        UpdateWheelRotation();
     }
     
     public void SetMiningTarget(Transform target)
@@ -103,13 +114,12 @@ public class RobotFollower : MonoBehaviour
         
         Vector3 targetVelocity = Vector3.zero;
         
-        // Дистанція зупинки - 3 метри від кристала
         float targetDistance = 3f;
         
         if (distanceToTarget > targetDistance + 0.2f)
         {
             Vector3 moveDirection = directionToTarget.normalized;
-            targetVelocity = moveDirection * miningSpeed; // Використовуємо підвищену швидкість
+            targetVelocity = moveDirection * miningSpeed;
         }
         else
         {
@@ -135,7 +145,7 @@ public class RobotFollower : MonoBehaviour
         if (distanceToPlayer > followDistance)
         {
             Vector3 moveDirection = directionToPlayer.normalized;
-            targetVelocity = moveDirection * moveSpeed; // Звичайна швидкість
+            targetVelocity = moveDirection * moveSpeed;
         }
         else if (distanceToPlayer < stopDistance)
         {
@@ -162,6 +172,32 @@ public class RobotFollower : MonoBehaviour
         }
         
         _rb.rotation = Quaternion.Slerp(_rb.rotation, _targetRotation, rotationSpeed * Time.fixedDeltaTime);
+    }
+    
+    private void UpdateWheelRotation()
+    {
+        if (wheels == null || wheels.Length == 0)
+        {
+            return;
+        }
+        
+        float currentSpeed = _currentVelocity.magnitude;
+        
+        if (currentSpeed > 0.1f)
+        {
+            float rotationAmount = wheelRotationSpeed * currentSpeed * Time.fixedDeltaTime;
+            
+            foreach (Transform wheel in wheels)
+            {
+                if (wheel == null)
+                {
+                    Debug.LogError("One of the wheels is null");
+                    continue;
+                }
+                
+                wheel.Rotate(wheelRotationAxis, rotationAmount, Space.Self);
+            }
+        }
     }
     
     private void OnDrawGizmos()
