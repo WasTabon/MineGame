@@ -1,8 +1,11 @@
 using UnityEngine;
+using System;
 
 public class WalletController : MonoBehaviour
 {
     public static WalletController Instance;
+
+    public event Action<int, int> OnMoneyChanged;
 
     public int Money
     {
@@ -10,9 +13,12 @@ public class WalletController : MonoBehaviour
 
         set
         {
+            int previousMoney = _money;
             _money = value;
             PlayerPrefs.SetInt("money", _money);
             PlayerPrefs.Save();
+            
+            OnMoneyChanged?.Invoke(previousMoney, _money);
         }
     }
     
@@ -20,7 +26,14 @@ public class WalletController : MonoBehaviour
     
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Debug.LogError("Multiple WalletController instances found");
+        }
         
         _money = PlayerPrefs.GetInt("money", 100);
     }
