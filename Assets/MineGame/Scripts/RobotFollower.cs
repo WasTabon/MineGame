@@ -34,6 +34,7 @@ public class RobotFollower : MonoBehaviour
         {
             _rb.interpolation = RigidbodyInterpolation.Interpolate;
             _rb.drag = drag;
+            _rb.constraints = RigidbodyConstraints.FreezeRotation;
         }
         else
         {
