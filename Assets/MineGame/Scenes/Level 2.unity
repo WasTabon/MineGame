@@ -16493,6 +16493,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 95302533162385464}
     - target: {fileID: 1176096590993220953, guid: 6f3984ed78331f347bbb0c132608e224, type: 3}
+      propertyPath: _particle
+      value: 
+      objectReference: {fileID: 1290715649332758, guid: 587eaecaa621be74486f351c78b4f0a8, type: 3}
+    - target: {fileID: 1176096590993220953, guid: 6f3984ed78331f347bbb0c132608e224, type: 3}
       propertyPath: deathPanel
       value: 
       objectReference: {fileID: 711575922}

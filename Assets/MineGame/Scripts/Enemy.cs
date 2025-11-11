@@ -1,11 +1,14 @@
 using UnityEngine;
 using DG.Tweening;
 using System.Collections;
+using Unity.Mathematics;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(BoxCollider))]
 public class Enemy : MonoBehaviour
 {
+    public GameObject _particle;
     public AudioClip roarSound;
     public AudioClip hitSound;
     
@@ -404,6 +407,7 @@ public class Enemy : MonoBehaviour
     {
         if (playerMovement != null)
         {
+            Instantiate(_particle, playerMovement.gameObject.transform.position, quaternion.identity);
             playerMovement.Die();
         }
         else
