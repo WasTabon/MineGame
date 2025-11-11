@@ -3,6 +3,11 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
+    public AudioClip[] _stepSounds;
+    
+    [SerializeField] private float walkStepInterval = 0.5f;
+    [SerializeField] private float runStepInterval = 0.3f;
+    
     [Header("References")]
     [SerializeField] private Joystick joystick;
     [SerializeField] private Animator animator;
@@ -21,6 +26,8 @@ public class PlayerMovement : MonoBehaviour
     
     [Header("Physics")]
     [SerializeField] private float drag = 5f;
+    
+    private float _stepTimer = 0f;
     
     private Rigidbody _rb;
     private Vector3 _currentVelocity;
@@ -94,6 +101,35 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         UpdateAnimation();
+        UpdateFootsteps();
+    }
+
+    private void UpdateFootsteps()
+    {
+        float currentSpeed = animator.GetFloat("Speed");
+    
+        if (currentSpeed > 0.1f && !_isStopping && _canMove)
+        {
+            float currentInterval = Mathf.Lerp(walkStepInterval, runStepInterval, currentSpeed);
+        
+            _stepTimer += Time.deltaTime;
+        
+            if (_stepTimer >= currentInterval)
+            {
+                _stepTimer = 0f;
+                PlayStepSound();
+            }
+        }
+        else
+        {
+            _stepTimer = 0f;
+        }
+    }
+
+    public void PlayStepSound()
+    {
+        int random = Random.Range(0, _stepSounds.Length);
+        MusicController.Instance.PlaySpecificSound(_stepSounds[random]);
     }
     
     public void Die()
