@@ -332,39 +332,63 @@ public class Enemy : MonoBehaviour
     yield return new WaitForSeconds(playerRotationDuration);
     
     if (mainCamera != null && player != null)
+{
+    Vector3 midPoint = (transform.position + player.position) / 2f;
+    
+    Vector3 sideDirection = Vector3.Cross(Vector3.up, (transform.position - player.position).normalized);
+    
+    float distanceBetween = Vector3.Distance(transform.position, player.position);
+    
+    Collider enemyCollider = GetComponent<Collider>();
+    Collider playerCollider = player.GetComponent<Collider>();
+    
+    float maxHeight = 2f;
+    
+    if (enemyCollider != null && playerCollider != null)
     {
-        Vector3 midPoint = (transform.position + player.position) / 2f;
-        
-        Vector3 sideDirection = Vector3.Cross(Vector3.up, (transform.position - player.position).normalized);
-        
-        float distanceBetween = Vector3.Distance(transform.position, player.position);
-        float cameraDistance = distanceBetween * 1.8f;
-        
-        Vector3 cameraPosition = midPoint + sideDirection * cameraDistance;
-        cameraPosition.y = midPoint.y + distanceBetween * 0.8f;
-        
-        Vector3 lookAtPoint = midPoint;
-        lookAtPoint.y = midPoint.y;
-        
-        Vector3 direction = lookAtPoint - cameraPosition;
-        direction.y = 0;
-        
-        Quaternion cameraRotation = Quaternion.LookRotation(direction);
-        
-        mainCamera.transform.DOMove(cameraPosition, cameraMoveDuration).SetEase(Ease.OutQuad);
-        mainCamera.transform.DORotateQuaternion(cameraRotation, cameraMoveDuration).SetEase(Ease.OutQuad);
+        float enemyHeight = enemyCollider.bounds.size.y;
+        float playerHeight = playerCollider.bounds.size.y;
+        maxHeight = Mathf.Max(enemyHeight, playerHeight);
     }
     else
     {
-        if (mainCamera == null)
-        {
-            Debug.LogError("Main camera is null when moving camera");
-        }
-        else
-        {
-            Debug.LogError("Player is null when moving camera");
-        }
+        Debug.LogError("Enemy or Player collider is null when calculating height");
     }
+    
+    float verticalFOV = mainCamera.fieldOfView * Mathf.Deg2Rad;
+    
+    float totalWidth = distanceBetween * 2f;
+    
+    float requiredDistanceForWidth = totalWidth / (2f * Mathf.Tan(verticalFOV * mainCamera.aspect / 2f));
+    
+    float requiredDistanceForHeight = (maxHeight * 1.5f) / (2f * Mathf.Tan(verticalFOV / 2f));
+    
+    float cameraDistance = Mathf.Max(requiredDistanceForWidth, requiredDistanceForHeight, distanceBetween * 2f);
+    
+    Vector3 cameraPosition = midPoint + sideDirection * cameraDistance;
+    
+    float groundY = Mathf.Min(transform.position.y, player.position.y);
+    cameraPosition.y = groundY + (maxHeight * 0.6f);
+    
+    Vector3 lookAtPoint = midPoint;
+    lookAtPoint.y = groundY + (maxHeight * 0.5f);
+    
+    Quaternion cameraRotation = Quaternion.LookRotation(lookAtPoint - cameraPosition);
+    
+    mainCamera.transform.DOMove(cameraPosition, cameraMoveDuration).SetEase(Ease.OutQuad);
+    mainCamera.transform.DORotateQuaternion(cameraRotation, cameraMoveDuration).SetEase(Ease.OutQuad);
+}
+else
+{
+    if (mainCamera == null)
+    {
+        Debug.LogError("Main camera is null when moving camera");
+    }
+    else
+    {
+        Debug.LogError("Player is null when moving camera");
+    }
+}
     
     yield return new WaitForSeconds(cameraMoveDuration);
     
