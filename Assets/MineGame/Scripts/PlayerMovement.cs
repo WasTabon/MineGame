@@ -96,6 +96,20 @@ public class PlayerMovement : MonoBehaviour
         UpdateAnimation();
     }
     
+    public void Die()
+    {
+        enabled = false;
+    
+        if (animator != null)
+        {
+            animator.SetTrigger("Die");
+        }
+        else
+        {
+            Debug.LogError("Animator is null when dying");
+        }
+    }
+    
     private void CheckCurrentAnimationState()
     {
         if (animator != null)
