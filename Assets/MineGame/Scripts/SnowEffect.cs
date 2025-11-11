@@ -3,10 +3,11 @@ using UnityEngine;
 public class SnowEffect : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private int particleCount = 150;
+    [SerializeField] private int particleCount = 500;
     [SerializeField] private float windStrength = 8f;
     [SerializeField] private float turbulence = 3f;
     [SerializeField] private float spawnDistance = 10f;
+    private int cullingMask = ~0;
     
     private ParticleSystem blizzardParticles;
     
@@ -38,6 +39,9 @@ public class SnowEffect : MonoBehaviour
         main.startSize = new ParticleSystem.MinMaxCurve(0.1f, 0.3f);
         main.startColor = new Color(1f, 1f, 1f, 0.9f);
         main.startRotation = new ParticleSystem.MinMaxCurve(0, 360f * Mathf.Deg2Rad);
+        main.cullingMode = ParticleSystemCullingMode.Automatic;
+        main.ringBufferMode = ParticleSystemRingBufferMode.PauseUntilReplaced;
+        main.scalingMode = ParticleSystemScalingMode.Local;
         
         var emission = blizzardParticles.emission;
         emission.rateOverTime = particleCount / 2.5f;
@@ -60,6 +64,7 @@ public class SnowEffect : MonoBehaviour
         noise.frequency = 0.5f;
         noise.scrollSpeed = 2f;
         noise.damping = false;
+        noise.quality = ParticleSystemNoiseQuality.Low;
         
         var rotationOverLifetime = blizzardParticles.rotationOverLifetime;
         rotationOverLifetime.enabled = true;
@@ -91,10 +96,25 @@ public class SnowEffect : MonoBehaviour
         );
         colorOverLifetime.color = new ParticleSystem.MinMaxGradient(grad);
         
+        var collision = blizzardParticles.collision;
+        collision.enabled = true;
+        collision.type = ParticleSystemCollisionType.World;
+        collision.mode = ParticleSystemCollisionMode.Collision3D;
+        collision.quality = ParticleSystemCollisionQuality.Low;
+        collision.collidesWith = cullingMask;
+        collision.lifetimeLoss = 1f;
+        collision.dampen = 0f;
+        collision.bounce = 0f;
+        collision.maxCollisionShapes = 64;
+        
         var renderer = blizzardParticles.GetComponent<ParticleSystemRenderer>();
         renderer.renderMode = ParticleSystemRenderMode.Billboard;
-        renderer.material = CreateBlizzardMaterial();
+        renderer.material = CreateOptimizedMaterial();
         renderer.sortingFudge = 0;
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        renderer.receiveShadows = false;
+        renderer.motionVectorGenerationMode = MotionVectorGenerationMode.ForceNoMotion;
+        renderer.allowRoll = false;
     }
     
     Vector3 CalculateBoxSize()
@@ -112,31 +132,48 @@ public class SnowEffect : MonoBehaviour
         );
     }
     
-    Material CreateBlizzardMaterial()
+    Material CreateOptimizedMaterial()
     {
-        Material mat = new Material(Shader.Find("Unlit/Transparent"));
+        Shader shader = Shader.Find("Mobile/Particles/Additive");
         
-        Texture2D texture = new Texture2D(32, 32);
-        Color[] colors = new Color[32 * 32];
-        
-        Vector2 center = new Vector2(16, 16);
-        
-        for (int y = 0; y < 32; y++)
+        if (shader == null)
         {
-            for (int x = 0; x < 32; x++)
+            shader = Shader.Find("Unlit/Transparent");
+        }
+        
+        Material mat = new Material(shader);
+        
+        Texture2D texture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
+        texture.wrapMode = TextureWrapMode.Clamp;
+        texture.filterMode = FilterMode.Bilinear;
+        
+        Color[] colors = new Color[16 * 16];
+        Vector2 center = new Vector2(8, 8);
+        
+        for (int y = 0; y < 16; y++)
+        {
+            for (int x = 0; x < 16; x++)
             {
-                float dist = Vector2.Distance(new Vector2(x, y), center) / 16f;
+                float dist = Vector2.Distance(new Vector2(x, y), center) / 8f;
                 float alpha = Mathf.Clamp01(1f - dist);
                 alpha = Mathf.Pow(alpha, 2f);
-                colors[y * 32 + x] = new Color(1f, 1f, 1f, alpha);
+                colors[y * 16 + x] = new Color(1f, 1f, 1f, alpha);
             }
         }
         
         texture.SetPixels(colors);
-        texture.Apply();
+        texture.Apply(false, true);
         
         mat.mainTexture = texture;
-        mat.SetColor("_Color", Color.white);
+        
+        if (shader.name.Contains("Mobile"))
+        {
+            mat.SetColor("_TintColor", new Color(1f, 1f, 1f, 0.5f));
+        }
+        else
+        {
+            mat.SetColor("_Color", Color.white);
+        }
         
         return mat;
     }
@@ -154,6 +191,9 @@ public class SnowEffect : MonoBehaviour
         var shape = blizzardParticles.shape;
         Vector3 boxSize = CalculateBoxSize();
         shape.scale = boxSize;
+        
+        var collision = blizzardParticles.collision;
+        collision.collidesWith = cullingMask;
     }
     
     public void SetWindStrength(float strength)
@@ -182,5 +222,19 @@ public class SnowEffect : MonoBehaviour
         
         var noise = blizzardParticles.noise;
         noise.strength = turbulence;
+    }
+    
+    public void SetCullingMask(LayerMask mask)
+    {
+        cullingMask = mask;
+        
+        if (blizzardParticles == null)
+        {
+            Debug.LogError("Blizzard particles is null");
+            return;
+        }
+        
+        var collision = blizzardParticles.collision;
+        collision.collidesWith = mask;
     }
 }
