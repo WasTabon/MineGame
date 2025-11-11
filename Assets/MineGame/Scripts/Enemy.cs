@@ -309,7 +309,7 @@ public class Enemy : MonoBehaviour
     }
     
     IEnumerator AttackSequence()
-{
+    {
     if (player == null || playerRb == null || playerMovement == null)
     {
         Debug.LogError("Player references are null in AttackSequence");
@@ -333,32 +333,45 @@ public class Enemy : MonoBehaviour
     
     if (mainCamera != null && player != null)
     {
-        Vector3 enemyPos = transform.position;
-        Vector3 playerPos = player.position;
+        // Получаем центры коллайдеров вместо позиций у ног
+        Vector3 enemyCenter = transform.position + Vector3.up * (_boxCollider.size.y * transform.localScale.y * 0.5f);
+        Vector3 playerCenter = player.position + Vector3.up * 1f; // Примерная высота центра игрока
         
-        Vector3 midPoint = (enemyPos + playerPos) / 2f;
+        // Средняя точка между центрами персонажей
+        Vector3 midPoint = (enemyCenter + playerCenter) / 2f;
         
-        Vector3 directionBetween = (enemyPos - playerPos).normalized;
-        Vector3 sideDirection = Vector3.Cross(Vector3.up, directionBetween);
+        // Направление между персонажами
+        Vector3 directionBetween = (enemyCenter - playerCenter).normalized;
+        Vector3 rightDirection = Vector3.Cross(Vector3.up, directionBetween).normalized;
         
-        float distanceBetween = Vector3.Distance(
-            new Vector3(enemyPos.x, 0, enemyPos.z),
-            new Vector3(playerPos.x, 0, playerPos.z)
+        // Определяем с какой стороны расположить камеру
+        Vector3 cameraToMidpoint = midPoint - mainCamera.transform.position;
+        cameraToMidpoint.y = 0;
+        
+        float dot = Vector3.Dot(rightDirection, cameraToMidpoint.normalized);
+        Vector3 sideDirection = dot > 0 ? rightDirection : -rightDirection;
+        
+        // Расстояние между персонажами на плоскости XZ
+        float horizontalDistance = Vector3.Distance(
+            new Vector3(enemyCenter.x, 0, enemyCenter.z),
+            new Vector3(playerCenter.x, 0, playerCenter.z)
         );
         
-        float cameraDistance = Mathf.Max(distanceBetween * 2.5f, 8f);
+        // Дистанция камеры от средней точки
+        float cameraDistance = Mathf.Max(horizontalDistance * 1.2f, 4f); // Минимум 4 единицы
         
-        float averageY = (enemyPos.y + playerPos.y) / 2f;
+        // Высота камеры = высота средней точки + offset
+        float cameraHeight = midPoint.y + 1f; // Камера чуть выше средней точки
         
+        // Финальная позиция камеры
         Vector3 cameraPosition = new Vector3(
             midPoint.x + sideDirection.x * cameraDistance,
-            averageY + 3f,
+            cameraHeight,
             midPoint.z + sideDirection.z * cameraDistance
         );
         
-        Vector3 lookAtPoint = new Vector3(midPoint.x, averageY + 1f, midPoint.z);
-        
-        Quaternion cameraRotation = Quaternion.LookRotation(lookAtPoint - cameraPosition);
+        // Камера смотрит на среднюю точку
+        Quaternion cameraRotation = Quaternion.LookRotation(midPoint - cameraPosition);
         
         mainCamera.transform.DOMove(cameraPosition, cameraMoveDuration).SetEase(Ease.OutQuad);
         mainCamera.transform.DORotateQuaternion(cameraRotation, cameraMoveDuration).SetEase(Ease.OutQuad);

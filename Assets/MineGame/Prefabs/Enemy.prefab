@@ -1981,9 +1981,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a09886b82d63e30408e2ca81ac81e79d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _particle: {fileID: 1290715649332758, guid: 587eaecaa621be74486f351c78b4f0a8, type: 3}
   roarSound: {fileID: 8300000, guid: b13b3e4e6e1db19439b0e2d29f226e4a, type: 3}
   hitSound: {fileID: 8300000, guid: 9c326c2ee4c6049468e1d4b2d0a01b7c, type: 3}
   patrolPoints:
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   patrolSpeed: 4
