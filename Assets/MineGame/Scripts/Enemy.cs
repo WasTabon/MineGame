@@ -6,6 +6,9 @@ using System.Collections;
 [RequireComponent(typeof(BoxCollider))]
 public class Enemy : MonoBehaviour
 {
+    public AudioClip roarSound;
+    public AudioClip hitSound;
+    
     [Header("Patrol")]
     [SerializeField] private Transform[] patrolPoints;
     [SerializeField] private float patrolSpeed = 2f;
@@ -382,6 +385,15 @@ public class Enemy : MonoBehaviour
     
     _currentState = State.Attacking;
 }
+
+    public void PlayRoarSound()
+    {
+        MusicController.Instance.PlaySpecificSound(roarSound);
+    }
+    public void PlayHitSound()
+    {
+        MusicController.Instance.PlaySpecificSound(hitSound);
+    }
     
     public void OnAttackAnimationEvent()
     {
