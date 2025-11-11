@@ -19,21 +19,21 @@ RenderSettings:
   m_FogMode: 1
   m_FogDensity: 0.013
   m_LinearFogStart: 0
-  m_LinearFogEnd: 340
+  m_LinearFogEnd: 70
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 79f68e42e2f5d1a40b6a3f456329bd49, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
   m_DefaultReflectionMode: 0
-  m_DefaultReflectionResolution: 128
+  m_DefaultReflectionResolution: 16
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
@@ -5008,7 +5008,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 50
+  far clip plane: 150
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -8905,7 +8905,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1785268501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12441,7 +12441,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1574489909297709}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 18.06013, y: 2.4149995, z: 29.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -12463,7 +12463,7 @@ Transform:
   - {fileID: 4252110438087651}
   - {fileID: 4037397388597071}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4374817611138893
 Transform:
   m_ObjectHideFlags: 0
@@ -17279,7 +17279,7 @@ Transform:
   m_GameObject: {fileID: 7466820008474137592}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 23.307346, y: 1.5566759, z: 29.544943}
+  m_LocalPosition: {x: 17.84, y: 1.5566759, z: 34.73}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
