@@ -1,3 +1,5 @@
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -6,6 +8,8 @@ public class UIController : MonoBehaviour
 {
     public static UIController Instance;
 
+    public TextMeshProUGUI moneyText;
+    
     [Header("Panels")]
     [SerializeField] private GameObject buyLevelPanel;
     [SerializeField] private GameObject levelPanel;
@@ -26,6 +30,11 @@ public class UIController : MonoBehaviour
         Instance = this;
         
         SetupButtons();
+    }
+
+    private void Update()
+    {
+        moneyText.text = $"{WalletController.Instance.Money}";
     }
 
     private void SetupButtons()

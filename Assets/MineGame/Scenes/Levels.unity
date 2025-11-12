@@ -1051,7 +1051,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelNumber: 1
-  isBoughtByDefault: 1
+  isBoughtByDefault: 0
 --- !u!135 &355160641
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1481,6 +1481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1767f27116fa5f447ad34acd0123b4b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moneyText: {fileID: 1592282564}
   buyLevelPanel: {fileID: 180211917}
   levelPanel: {fileID: 357232890}
   buyButton: {fileID: 172019549}
@@ -3796,7 +3797,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelNumber: 1
-  isBoughtByDefault: 1
+  isBoughtByDefault: 0
 --- !u!135 &2133954261
 SphereCollider:
   m_ObjectHideFlags: 0
