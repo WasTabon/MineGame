@@ -4,7 +4,7 @@ using UnityEngine.Purchasing;
 
 public class BuyController : MonoBehaviour
 {
-    public string _donateId = "com.htcpurchases.coinsmain";
+    public string _donateId = "com.cosmicminer.coinspurchase";
     
     public GameObject loadingButton;
     public AudioClip buySound;
@@ -17,7 +17,7 @@ public class BuyController : MonoBehaviour
         {
             Debug.Log("Complete");
 
-            WalletController.Instance.Money += 100;
+            WalletController.Instance.Money += 1000;
             
             MusicController.Instance.PlaySpecificSound(buySound);
             loadingButton.SetActive(false);
