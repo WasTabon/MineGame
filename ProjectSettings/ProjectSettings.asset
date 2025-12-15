@@ -969,7 +969,13 @@ PlayerSettings:
   windowsGamepadBackendHint: 0
   cloudProjectId: 38022ad9-5691-4e45-a7e8-fd7e16eb9fff
   framebufferDepthMemorylessMode: 0
-  qualitySettingsNames: []
+  qualitySettingsNames:
+  - Very Low
+  - Low
+  - Medium
+  - High
+  - Very High
+  - Ultra
   projectName: MineGame 2025-11-05_15-13-08
   organizationId: unity_7uso5rss2sjfeq
   cloudEnabled: 0

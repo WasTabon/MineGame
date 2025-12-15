@@ -3,6 +3,7 @@ using UnityEngine;
 public class SnowEffect : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private Material snowMaterial;
     [SerializeField] private int particleCount = 500;
     [SerializeField] private float windStrength = 8f;
     [SerializeField] private float turbulence = 3f;
@@ -16,6 +17,12 @@ public class SnowEffect : MonoBehaviour
         if (mainCamera == null)
         {
             Debug.LogError("Main camera is null");
+            return;
+        }
+
+        if (snowMaterial == null)
+        {
+            Debug.LogError("Snow material is null");
             return;
         }
         
@@ -109,7 +116,7 @@ public class SnowEffect : MonoBehaviour
         
         var renderer = blizzardParticles.GetComponent<ParticleSystemRenderer>();
         renderer.renderMode = ParticleSystemRenderMode.Billboard;
-        renderer.material = CreateOptimizedMaterial();
+        renderer.material = snowMaterial;
         renderer.sortingFudge = 0;
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         renderer.receiveShadows = false;
@@ -130,52 +137,6 @@ public class SnowEffect : MonoBehaviour
             height * margin,
             spawnDistance * 1.2f
         );
-    }
-    
-    Material CreateOptimizedMaterial()
-    {
-        Shader shader = Shader.Find("Mobile/Particles/Additive");
-        
-        if (shader == null)
-        {
-            shader = Shader.Find("Unlit/Transparent");
-        }
-        
-        Material mat = new Material(shader);
-        
-        Texture2D texture = new Texture2D(16, 16, TextureFormat.RGBA32, false);
-        texture.wrapMode = TextureWrapMode.Clamp;
-        texture.filterMode = FilterMode.Bilinear;
-        
-        Color[] colors = new Color[16 * 16];
-        Vector2 center = new Vector2(8, 8);
-        
-        for (int y = 0; y < 16; y++)
-        {
-            for (int x = 0; x < 16; x++)
-            {
-                float dist = Vector2.Distance(new Vector2(x, y), center) / 8f;
-                float alpha = Mathf.Clamp01(1f - dist);
-                alpha = Mathf.Pow(alpha, 2f);
-                colors[y * 16 + x] = new Color(1f, 1f, 1f, alpha);
-            }
-        }
-        
-        texture.SetPixels(colors);
-        texture.Apply(false, true);
-        
-        mat.mainTexture = texture;
-        
-        if (shader.name.Contains("Mobile"))
-        {
-            mat.SetColor("_TintColor", new Color(1f, 1f, 1f, 0.5f));
-        }
-        else
-        {
-            mat.SetColor("_Color", Color.white);
-        }
-        
-        return mat;
     }
     
     void OnValidate()
