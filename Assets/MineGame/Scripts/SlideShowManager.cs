@@ -92,6 +92,12 @@ public class SlideShowManager : MonoBehaviour
             PlayerPrefs.Save();
             gameObject.SetActive(false);
         });
+        Invoke("Close", 0.5f);
+    }
+
+    private void Close()
+    {
+        panelCanvasGroup.gameObject.SetActive(false);
     }
 
     private void OnDestroy()

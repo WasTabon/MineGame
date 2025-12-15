@@ -1844,6 +1844,7 @@ Transform:
   - {fileID: 222078103}
   - {fileID: 2076095327}
   - {fileID: 1641268835}
+  - {fileID: 463664741}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &397881345
@@ -2759,6 +2760,85 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 463593002}
   m_CullTransparentMesh: 1
+--- !u!1 &463664740
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 463664741}
+  - component: {fileID: 463664742}
+  m_Layer: 0
+  m_Name: TutorialController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &463664741
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463664740}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 396827258}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &463664742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463664740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cd2b6b9237de174790754a1198b8eb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialPanel: {fileID: 1880686524}
+  tutorialText: {fileID: 1880686528}
+  nextButton: {fileID: 1880686527}
+  nextButtonText: {fileID: 1880686526}
+  tutorialSteps:
+  - stepText: Choose a planet you want to travel to from the galaxy map. Each planet
+      is a new level with unique terrain, enemies, and crystal locations. Tap on
+      a planet to start your mission.
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: Once you land, control your robot to explore the area. Move around
+      the level and look for glowing crystals. When you find one, approach it and
+      let the robot mine it automatically. Collect all the crystals on the planet
+      to complete the mission.
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: Be careful - enemies patrol the area. If an enemy spots you, run away
+      and avoid contact. Use the environment and your speed to escape and stay safe
+      while continuing to collect crystals.
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: After you collect all the crystals, a takeoff button will appear on
+      the screen. Tap this button to leave the planet and safely return to space.
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: Back in the hub, spend the money you earned from crystal mining to
+      upgrade your character and robot. Improve speed, mining power, and survivability
+      to make future missions easier.
+    objectsToActivate: []
+    objectsToDeactivate: []
+  - stepText: You can also use your earned money to unlock new planets. Each new
+      level offers greater rewards and more danger, so upgrade wisely before moving
+      on.
+    objectsToActivate: []
+    objectsToDeactivate: []
 --- !u!1 &553319573
 GameObject:
   m_ObjectHideFlags: 0
@@ -8566,6 +8646,7 @@ RectTransform:
   - {fileID: 900543136}
   - {fileID: 711575923}
   - {fileID: 1093667201}
+  - {fileID: 1880686525}
   - {fileID: 1290073508}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -8707,6 +8788,208 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1814827456}
   m_CullTransparentMesh: 1
+--- !u!1001 &1880686523
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1785268504}
+    m_Modifications:
+    - target: {fileID: 1249512970952906757, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1f28bd2e29e01e34c99cde06423b50b6, type: 3}
+    - target: {fileID: 1629636903640948074, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: aa8cf831d7a7bbb4b950c27175d4f13d, type: 2}
+    - target: {fileID: 1629636903640948074, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 3275480085840928166, guid: aa8cf831d7a7bbb4b950c27175d4f13d, type: 2}
+    - target: {fileID: 1629636903640948074, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3487282072216702548, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3487282072216702548, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 8b7d1d8a4361f7f47a6395ee9e86737e, type: 3}
+    - target: {fileID: 3519829183558279096, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: aa8cf831d7a7bbb4b950c27175d4f13d, type: 2}
+    - target: {fileID: 3519829183558279096, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 3275480085840928166, guid: aa8cf831d7a7bbb4b950c27175d4f13d, type: 2}
+    - target: {fileID: 3519829183558279096, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4386888208490337060, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4386888208490337060, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 5a82c8c7ff974c443a56bf2382b34670, type: 3}
+    - target: {fileID: 5710218145629979434, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_Name
+      value: TutorialPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 5710218145629979434, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7157013633834799422, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_text
+      value: Choose a planet you want to travel to from the galaxy map. Each planet
+        is a new level with unique terrain, enemies, and crystal locations. Tap on
+        a planet to start your mission.
+      objectReference: {fileID: 0}
+    - target: {fileID: 7157013633834799422, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    - target: {fileID: 7157013633834799422, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+--- !u!1 &1880686524 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5710218145629979434, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+  m_PrefabInstance: {fileID: 1880686523}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &1880686525 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1938343125336889134, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+  m_PrefabInstance: {fileID: 1880686523}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1880686526 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1629636903640948074, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+  m_PrefabInstance: {fileID: 1880686523}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1880686527 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2454533119435705901, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+  m_PrefabInstance: {fileID: 1880686523}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1880686528 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7157013633834799422, guid: bb9eeab13fa4b144189eb2cdf309bbc6, type: 3}
+  m_PrefabInstance: {fileID: 1880686523}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1893544953
 PrefabInstance:
   m_ObjectHideFlags: 0
