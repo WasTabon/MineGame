@@ -9,16 +9,36 @@ public class ShipLevelController : MonoBehaviour
     [SerializeField] private Transform[] targetPositions;
     [SerializeField] private PlanetLevel[] planetLevels;
     [SerializeField] private Button actionButton;
+    [SerializeField] private Button nextButton;
+    [SerializeField] private Button prevButton;
     [SerializeField] private TextMeshProUGUI actionButtonText;
     [SerializeField] private float moveDuration = 3f;
+    [SerializeField] private float rotateDuration = 0.5f;
+    [SerializeField] private float buttonFadeDuration = 0.3f;
     
     private int currentIndex = 0;
     private bool isMoving = false;
+    private Sequence currentSequence;
+    
+    private CanvasGroup actionButtonCanvasGroup;
+    private CanvasGroup nextButtonCanvasGroup;
+    private CanvasGroup prevButtonCanvasGroup;
 
     private void Start()
     {
-        UpdateButtonState();
-        Debug.DrawRay(movingObject.position, movingObject.forward * 100f, Color.blue, 100f);
+        actionButtonCanvasGroup = GetOrAddCanvasGroup(actionButton.gameObject);
+        nextButtonCanvasGroup = GetOrAddCanvasGroup(nextButton.gameObject);
+        prevButtonCanvasGroup = GetOrAddCanvasGroup(prevButton.gameObject);
+    
+        MoveToFirst();
+    }
+
+    private CanvasGroup GetOrAddCanvasGroup(GameObject obj)
+    {
+        var canvasGroup = obj.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = obj.AddComponent<CanvasGroup>();
+        return canvasGroup;
     }
 
     public void MoveNext()
@@ -43,6 +63,10 @@ public class ShipLevelController : MonoBehaviour
     private void MoveToCurrentTarget()
     {
         isMoving = true;
+        
+        currentSequence?.Kill();
+        
+        HideButtons();
 
         Vector3 planetPosition = targetPositions[currentIndex].position;
         Vector3 targetPosition = new Vector3(
@@ -51,19 +75,63 @@ public class ShipLevelController : MonoBehaviour
             planetPosition.z + 575f
         );
 
-        Vector3 lookDirection = planetPosition - targetPosition;
-    
-        if (lookDirection.sqrMagnitude > 0.001f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-            movingObject.DORotateQuaternion(targetRotation, moveDuration);
-        }
+        Vector3 moveDirection = targetPosition - movingObject.position;
+        
+        Quaternion flyRotation = Quaternion.LookRotation(moveDirection);
+        
+        Quaternion lookAtPlanetRotation = Quaternion.LookRotation(planetPosition - targetPosition);
 
-        movingObject.DOMove(targetPosition, moveDuration).OnComplete(() => 
+        currentSequence = DOTween.Sequence();
+        
+        currentSequence.Append(
+            movingObject.DORotateQuaternion(flyRotation, rotateDuration)
+                .SetEase(Ease.InOutSine)
+        );
+        
+        currentSequence.Append(
+            movingObject.DOMove(targetPosition, moveDuration)
+                .SetEase(Ease.InOutQuad)
+        );
+        
+        currentSequence.Append(
+            movingObject.DORotateQuaternion(lookAtPlanetRotation, rotateDuration)
+                .SetEase(Ease.InOutSine)
+        );
+
+        currentSequence.OnComplete(() =>
         {
             isMoving = false;
             UpdateButtonState();
+            ShowButtons();
         });
+    }
+
+    private void HideButtons()
+    {
+        SetButtonsInteractable(false);
+        
+        actionButtonCanvasGroup.DOFade(0f, buttonFadeDuration).SetEase(Ease.OutQuad);
+        nextButtonCanvasGroup.DOFade(0f, buttonFadeDuration).SetEase(Ease.OutQuad);
+        prevButtonCanvasGroup.DOFade(0f, buttonFadeDuration).SetEase(Ease.OutQuad);
+    }
+
+    private void ShowButtons()
+    {
+        actionButtonCanvasGroup.DOFade(1f, buttonFadeDuration).SetEase(Ease.InQuad);
+        nextButtonCanvasGroup.DOFade(1f, buttonFadeDuration).SetEase(Ease.InQuad);
+        prevButtonCanvasGroup.DOFade(1f, buttonFadeDuration).SetEase(Ease.InQuad)
+            .OnComplete(() => SetButtonsInteractable(true));
+    }
+
+    private void SetButtonsInteractable(bool interactable)
+    {
+        actionButton.interactable = interactable;
+        nextButton.interactable = interactable;
+        prevButton.interactable = interactable;
+        
+        actionButtonCanvasGroup.blocksRaycasts = interactable;
+        nextButtonCanvasGroup.blocksRaycasts = interactable;
+        prevButtonCanvasGroup.blocksRaycasts = interactable;
     }
 
     private void UpdateButtonState()
@@ -81,6 +149,25 @@ public class ShipLevelController : MonoBehaviour
             actionButtonText.text = "PURCHASE";
         }
     }
+    
+    public void MoveToFirst()
+    {
+        currentIndex = 0;
+    
+        Vector3 planetPosition = targetPositions[currentIndex].position;
+        Vector3 targetPosition = new Vector3(
+            planetPosition.x,
+            planetPosition.y,
+            planetPosition.z + 575f
+        );
+    
+        Quaternion lookAtPlanetRotation = Quaternion.LookRotation(planetPosition - targetPosition);
+    
+        movingObject.position = targetPosition;
+        movingObject.rotation = lookAtPlanetRotation;
+    
+        UpdateButtonState();
+    }
 
     public void OnActionButtonClick()
     {
@@ -96,5 +183,10 @@ public class ShipLevelController : MonoBehaviour
         {
             UIController.Instance.ShowBuyLevelPanel(currentPlanet);
         }
+    }
+
+    private void OnDestroy()
+    {
+        currentSequence?.Kill();
     }
 }

@@ -9,7 +9,7 @@ public class PlanetLevel : MonoBehaviour
     private bool _isBought;
     private string SaveKey => $"planet_level_{levelNumber}_bought";
 
-    private void Start()
+    private void Awake()
     {
         LoadPurchaseState();
     }
@@ -33,6 +33,9 @@ public class PlanetLevel : MonoBehaviour
     
     public bool IsBought()
     {
+        if (isBoughtByDefault)
+            return true;
+        
         return _isBought;
     }
 
