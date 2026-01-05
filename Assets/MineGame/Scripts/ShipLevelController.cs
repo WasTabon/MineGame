@@ -10,6 +10,7 @@ public class ShipLevelController : MonoBehaviour
     [SerializeField] private PlanetLevel[] planetLevels;
     [SerializeField] private Button actionButton;
     [SerializeField] private TextMeshProUGUI actionButtonText;
+    [SerializeField] private float moveDuration = 3f;
     
     private int currentIndex = 0;
     private bool isMoving = false;
@@ -17,6 +18,7 @@ public class ShipLevelController : MonoBehaviour
     private void Start()
     {
         UpdateButtonState();
+        Debug.DrawRay(movingObject.position, movingObject.forward * 100f, Color.blue, 100f);
     }
 
     public void MoveNext()
@@ -41,14 +43,23 @@ public class ShipLevelController : MonoBehaviour
     private void MoveToCurrentTarget()
     {
         isMoving = true;
-        
+
+        Vector3 planetPosition = targetPositions[currentIndex].position;
         Vector3 targetPosition = new Vector3(
-            targetPositions[currentIndex].position.x,
-            targetPositions[currentIndex].position.y,
-            movingObject.position.z
+            planetPosition.x,
+            planetPosition.y,
+            planetPosition.z + 575f
         );
 
-        movingObject.DOMove(targetPosition, 1f).OnComplete(() => 
+        Vector3 lookDirection = planetPosition - targetPosition;
+    
+        if (lookDirection.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+            movingObject.DORotateQuaternion(targetRotation, moveDuration);
+        }
+
+        movingObject.DOMove(targetPosition, moveDuration).OnComplete(() => 
         {
             isMoving = false;
             UpdateButtonState();
