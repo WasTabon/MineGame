@@ -30,6 +30,11 @@ public class PlanetLevel : MonoBehaviour
     {
         HandleClick();
     }
+    
+    public bool IsBought()
+    {
+        return _isBought;
+    }
 
     private void Update()
     {
