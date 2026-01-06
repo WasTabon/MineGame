@@ -67,6 +67,8 @@ public class PlanetLevel : MonoBehaviour
 
     private void HandleClick()
     {
+        return;
+        
         if (_isBought)
         {
             UIController.Instance.ShowLevelPanel(levelNumber);
