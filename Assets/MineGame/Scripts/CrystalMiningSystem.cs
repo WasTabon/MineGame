@@ -448,7 +448,15 @@ public class CrystalMiningSystem : MonoBehaviour
         {
             if (WalletController.Instance != null)
             {
-                WalletController.Instance.Money += crystalReward;
+                int finalReward = crystalReward;
+                
+                if (ComboSystem.Instance != null)
+                {
+                    ComboSystem.Instance.AddCombo();
+                    finalReward = ComboSystem.Instance.ApplyMultiplier(crystalReward);
+                }
+                
+                WalletController.Instance.Money += finalReward;
             }
             else
             {
