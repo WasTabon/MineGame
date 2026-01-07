@@ -55,13 +55,18 @@ public class Enemy : MonoBehaviour
     [SerializeField] private bool useHPSystem = true;
     [SerializeField] private float attackCooldown = 2f;
 
+    [Header("Stealth System")]
+    [SerializeField] private bool useStealthSystem = true;
+    
+    private bool _isRecovering = false;
+    
     private float _lastAttackTime = -999f;
     
     private Rigidbody _rb;
     private BoxCollider _boxCollider;
     private Vector3 _currentVelocity;
     
-    private enum State { Patrol, Chase, Attack, Attacking }
+    private enum State { Patrol, Detecting, Chase, Attack, Attacking }
     private State _currentState = State.Patrol;
     
     private int _currentPatrolIndex = 0;
@@ -178,6 +183,9 @@ public class Enemy : MonoBehaviour
                 PatrolBehavior();
                 CheckForPlayer();
                 break;
+            case State.Detecting:
+                DetectingBehavior();
+                break;
             case State.Chase:
                 ChaseBehavior();
                 CheckAttackDistance();
@@ -222,18 +230,79 @@ public class Enemy : MonoBehaviour
     
     void CheckForPlayer()
     {
+        if (_isRecovering) return;
+    
         if (_playerInRange && player != null)
         {
-            _currentState = State.Chase;
-            
-            if (enemyAnimator != null)
+            if (useStealthSystem && StealthMeter.Instance != null)
             {
-                enemyAnimator.SetBool("Run", true);
+                _currentState = State.Detecting;
+                StealthMeter.Instance.SetDetecting(true);
+                StealthMeter.Instance.OnPlayerDetected = OnStealthDetected;
             }
             else
             {
-                Debug.LogError("Enemy animator is null when starting chase");
+                StartChase();
             }
+        }
+    }
+    void DetectingBehavior()
+    {
+        if (_isRecovering)
+        {
+            _currentState = State.Patrol;
+            return;
+        }
+    
+        if (player == null) return;
+
+        PatrolBehavior();
+
+        Vector3 directionToPlayer = player.position - transform.position;
+        directionToPlayer.y = 0;
+        RotateTowards(directionToPlayer.normalized);
+
+        if (StealthMeter.Instance == null)
+        {
+            if (!_playerInRange)
+            {
+                _currentState = State.Patrol;
+            }
+            return;
+        }
+
+        if (_playerInRange)
+        {
+            StealthMeter.Instance.SetDetecting(true);
+        }
+        else
+        {
+            StealthMeter.Instance.SetDetecting(false);
+        
+            if (StealthMeter.Instance.GetDetectionLevel() <= 0f)
+            {
+                _currentState = State.Patrol;
+            }
+        }
+    }
+
+    void OnStealthDetected()
+    {
+        StartChase();
+    }
+
+    void StartChase()
+    {
+        _currentState = State.Chase;
+    
+        if (useStealthSystem && StealthMeter.Instance != null)
+        {
+            StealthMeter.Instance.ResetDetection();
+        }
+    
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.SetBool("Run", true);
         }
     }
     
@@ -280,6 +349,7 @@ public class Enemy : MonoBehaviour
         if (PlayerHealth.Instance == null) return;
         if (PlayerHealth.Instance.IsInvincible()) return;
         if (Time.time - _lastAttackTime < attackCooldown) return;
+        if (_isRecovering) return;
 
         _lastAttackTime = Time.time;
 
@@ -291,12 +361,40 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            _playerInRange = false;
-            _currentState = State.Patrol;
-        
-            if (enemyAnimator != null)
+            StartCoroutine(RecoveryCoroutine());
+        }
+    }
+
+    System.Collections.IEnumerator RecoveryCoroutine()
+    {
+        _isRecovering = true;
+        _currentState = State.Patrol;
+
+        if (enemyAnimator != null)
+        {
+            enemyAnimator.SetBool("Run", false);
+        }
+
+        if (useStealthSystem && StealthMeter.Instance != null)
+        {
+            StealthMeter.Instance.ResetDetection();
+        }
+
+        yield return new WaitForSeconds(attackCooldown);
+
+        _isRecovering = false;
+
+        if (_playerInRange && player != null)
+        {
+            if (useStealthSystem && StealthMeter.Instance != null)
             {
-                enemyAnimator.SetBool("Run", false);
+                _currentState = State.Detecting;
+                StealthMeter.Instance.SetDetecting(true);
+                StealthMeter.Instance.OnPlayerDetected = OnStealthDetected;
+            }
+            else
+            {
+                StartChase();
             }
         }
     }
@@ -552,6 +650,11 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             _playerInRange = true;
+        
+            if (!_isRecovering && _currentState == State.Detecting && useStealthSystem && StealthMeter.Instance != null)
+            {
+                StealthMeter.Instance.SetDetecting(true);
+            }
         }
     }
     
@@ -560,6 +663,11 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             _playerInRange = false;
+        
+            if (_currentState == State.Detecting && useStealthSystem && StealthMeter.Instance != null)
+            {
+                StealthMeter.Instance.SetDetecting(false);
+            }
         }
     }
     
