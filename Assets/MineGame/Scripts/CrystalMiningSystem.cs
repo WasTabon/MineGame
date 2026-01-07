@@ -457,6 +457,11 @@ public class CrystalMiningSystem : MonoBehaviour
                 }
                 
                 WalletController.Instance.Money += finalReward;
+                
+                if (LevelGoalSystem.Instance != null)
+                {
+                    LevelGoalSystem.Instance.OnCrystalCollected(finalReward);
+                }
             }
             else
             {
