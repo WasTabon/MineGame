@@ -51,6 +51,12 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Color attackRangeColor = new Color(1f, 0f, 0f, 0.3f);
     [SerializeField] private Color detectionRangeColor = new Color(1f, 1f, 0f, 0.3f);
     
+    [Header("HP Attack")]
+    [SerializeField] private bool useHPSystem = true;
+    [SerializeField] private float attackCooldown = 2f;
+
+    private float _lastAttackTime = -999f;
+    
     private Rigidbody _rb;
     private BoxCollider _boxCollider;
     private Vector3 _currentVelocity;
@@ -253,12 +259,45 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Player is null in CheckAttackDistance");
             return;
         }
-        
+    
         float distance = Vector3.Distance(transform.position, player.position);
-        
+    
         if (distance <= attackDistance)
         {
+            if (useHPSystem && PlayerHealth.Instance != null)
+            {
+                QuickAttack();
+            }
+            else
+            {
+                StartAttack();
+            }
+        }
+    }
+    
+    void QuickAttack()
+    {
+        if (PlayerHealth.Instance == null) return;
+        if (PlayerHealth.Instance.IsInvincible()) return;
+        if (Time.time - _lastAttackTime < attackCooldown) return;
+
+        _lastAttackTime = Time.time;
+
+        PlayerHealth.Instance.TakeDamage(transform.position);
+
+        if (PlayerHealth.Instance.GetCurrentHealth() <= 0)
+        {
             StartAttack();
+        }
+        else
+        {
+            _playerInRange = false;
+            _currentState = State.Patrol;
+        
+            if (enemyAnimator != null)
+            {
+                enemyAnimator.SetBool("Run", false);
+            }
         }
     }
     

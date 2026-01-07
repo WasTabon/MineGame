@@ -179,19 +179,24 @@ public class PlayerMovement : MonoBehaviour
         {
             float horizontal = joystick.Horizontal;
             float vertical = joystick.Vertical;
-            
+        
             Vector3 moveDirection = new Vector3(horizontal, 0f, vertical).normalized;
             float inputMagnitude = new Vector2(horizontal, vertical).magnitude;
             inputMagnitude = Mathf.Clamp01(inputMagnitude);
-            
+        
+            if (StaminaSystem.Instance != null)
+            {
+                inputMagnitude = StaminaSystem.Instance.ProcessInput(inputMagnitude);
+            }
+        
             float currentMaxSpeed = Mathf.Lerp(walkSpeed, runSpeed, inputMagnitude);
-            
+        
             Vector3 targetVelocity = moveDirection * currentMaxSpeed;
-            
+        
             float currentAcceleration = moveDirection.magnitude > 0.1f ? acceleration : deceleration;
-            
+        
             _currentVelocity = Vector3.Lerp(_currentVelocity, targetVelocity, currentAcceleration * Time.fixedDeltaTime);
-            
+        
             Vector3 newVelocity = new Vector3(_currentVelocity.x, _rb.velocity.y, _currentVelocity.z);
             _rb.velocity = newVelocity;
         }
